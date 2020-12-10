@@ -2,7 +2,7 @@
 
 Plot bearings of a gpx track on a radar chart
 
-![Radar chart](https://github.com/sgelb/gpx_orientation/master/examples/example_plot.png)
+![Radar chart](https://github.com/sgelb/gpx_orientation/blob/master/examples/example_plot.png)
 
 ## Usage
 
