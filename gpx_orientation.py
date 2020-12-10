@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+
 import argparse
-from itertools import takewhile
-from math import degrees, pi, radians
+from math import radians
 from typing import Dict, List, Tuple
 
 import gpxpy
@@ -10,16 +11,16 @@ from gpxpy import geo
 
 
 def arguments():
-    parser = argparse.ArgumentParser(description="Plot bearings of gpx track on radar chart")
-    parser.add_argument("--gpx", "-g", help="gpx file")
+    parser = argparse.ArgumentParser(description="Plot bearings of gpx track on radar chart", formatter_class = argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "--segments", "-s", help="number of segments", type=int, default="16",
     )
     parser.add_argument("--north", "-n", help="north align segment border", action="store_true")
+    parser.add_argument("gpx", help="gpx file")
     return parser.parse_args()
 
 
-def get_distances_per_degree(gpx, segments: float) -> Dict[float, float]:
+def get_distances_per_degree(gpx) -> Dict[float, float]:
     distance_per_degree: Dict[float, float] = {}
     for track in gpx.tracks:
         for segment in track.segments:
@@ -72,8 +73,8 @@ def get_values_and_angles(
 
 
 def plot_chart(values: List, angles: List, title: str) -> None:
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-    lines, labels = plt.thetagrids(range(0, 360, 45), ("E", "NE", "N", "NW", "W", "SW", "S", "SE"))
+    _, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    plt.thetagrids(range(0, 360, 45), ("E", "NE", "N", "NW", "W", "SW", "S", "SE"))
     ax.plot(angles, values, color="violet", linewidth=2)
     ax.fill(angles, values, "b", alpha=0.1)
     plt.title(title)
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     with open(args.gpx, "r") as gpx_file:
         gpx = gpxpy.parse(gpx_file)
 
-    distance_per_degree = get_distances_per_degree(gpx, args.segments)
+    distance_per_degree = get_distances_per_degree(gpx)
     offset = get_offset(args.north, args.segments)
     ranges = get_ranges(args.segments, offset)
     values, angles = get_values_and_angles(ranges, distance_per_degree, offset)
